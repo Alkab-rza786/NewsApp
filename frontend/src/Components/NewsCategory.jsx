@@ -63,7 +63,7 @@ const NewsCategory = ({ category }) => {
                         <div className="flex gap-4 flex-col sm:flex-row">
                             {twoPost.slice(0, 2).map((post, index) => (
                                 <Link to={`/news/${post.id}`} key={index}>
-                                    <img src={post.image} alt="Main Post" className="w-full h-5/6 mb-4" />
+                                    <img src={post.image} alt="Main Post" className="w-full h-5/6 mb-4" loading="lazy" />
                                     <h3 className="text-2xl font-semibold">{post.headline}</h3>
                                 </Link>
                             ))}
@@ -81,6 +81,7 @@ const NewsCategory = ({ category }) => {
                                     src={post.image}
                                     alt={post.headline}
                                     className="w-16 h-16 object-cover"
+                                    loading="lazy"
                                 />
                                 <div>
                                     <p className="text-red-600 font-bold">{post.category}</p>
@@ -101,23 +102,24 @@ const NewsCategory = ({ category }) => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 ">
                     {posts.filter(post => post.category === category && post.type === "normal").slice(0, 7).map((post, index) => (
-                        <div  key={index} className="bg-white shadow-md rounded-lg overflow-hidden transform hover:scale-105 transition-transform duration-300">
+                        <div key={index} className="bg-white shadow-md rounded-lg overflow-hidden transform hover:scale-105 transition-transform duration-300">
                             <img
                                 src={post.image}
                                 alt="News"
                                 className="w-full h-40 object-cover"
+                                loading="lazy"
                             />
                             <div className="p-3">
                                 <h3 className="font-semibold text-base text-gray-800">{post.headline}</h3>
                                 <p className="text-xs text-gray-500 mt-1">{post.category} • {new Date(post.createdAt).toLocaleDateString('en-CA')}</p>
-                                <Link to={`/news/${post.id}`}  onClick={window.scrollTo(0, 0)} >
-                                <p className="text-sm text-gray-600 mt-2 hover:underline ">{post?.summary ? (post.summary.length > 50 ? `${post.summary.substring(0, 250)}...` : post.summary) : "No summary available"}</p></Link>
+                                <Link to={`/news/${post.id}`} onClick={window.scrollTo(0, 0)} >
+                                    <p className="text-sm text-gray-600 mt-2 hover:underline ">{post?.summary ? (post.summary.length > 50 ? `${post.summary.substring(0, 250)}...` : post.summary) : "No summary available"}</p></Link>
                                 <div className='flex gap-3'>
 
-                                <Link to={`/news/${post.id}`}  onClick={window.scrollTo(0, 0)} > <button className="bg-orange-500 text-white px-3 py-1 mt-4 text-sm rounded hover:bg-orange-600">Read more</button> </Link>
-                                <ShareButton url={`http://localhost:4000/news/${post.id}`} title={post.headline} />
+                                    <Link to={`/news/${post.id}`} onClick={window.scrollTo(0, 0)} > <button className="bg-orange-500 text-white px-3 py-1 mt-4 text-sm rounded hover:bg-orange-600">Read more</button> </Link>
+                                    <ShareButton url={`http://localhost:4000/news/${post.id}`} title={post.headline} />
                                 </div>
-                                
+
                             </div>
                         </div>
                     ))}
@@ -129,15 +131,15 @@ const NewsCategory = ({ category }) => {
                 {posts.filter(post => post.category === category && post.type === "normal").slice(7, 10).map((news, index) => (
                     <Link key={index} className="flex flex-col md:flex-row bg-white shadow-md rounded-lg overflow-hidden mb-4">
                         <div className="md:w-1/3">
-                            <img src={news.image} alt={news.headline} className="w-full h-48 md:h-full object-cover" />
+                            <img src={news.image} alt={news.headline} className="w-full h-48 md:h-full object-cover" loading="lazy"/>
                         </div>
                         <div className="p-4 md:w-2/3 flex flex-col justify-between">
                             <div>
                                 <h2 className="text-lg font-semibold text-gray-800">{news.headline}</h2>
                                 <p className="text-sm text-gray-600">By <span className="font-bold"></span> — {new Date(news.createdAt).toLocaleDateString('en-CA')}</p>
                                 <Link to={`/news/${news.id}`}><p className="text-sm text-gray-500 hover:underline">{news.summary}</p>
-                                
-                                <button className="mt-2 text-blue-600 hover:text-blue-800 text-sm font-semibold">Read More</button></Link>
+
+                                    <button className="mt-2 text-blue-600 hover:text-blue-800 text-sm font-semibold">Read More</button></Link>
                             </div>
                             <div className="flex justify-between items-center mt-4">
                                 {news.percentage && (
@@ -146,7 +148,7 @@ const NewsCategory = ({ category }) => {
                                     </div>
                                 )}
                                 <div className="flex items-center text-gray-500 text-sm space-x-2">
-                                <ShareButton url={`http://localhost:4000/news/${news.id}`} title={news.headline} />
+                                    <ShareButton url={`http://localhost:4000/news/${news.id}`} title={news.headline} />
                                 </div>
                             </div>
                         </div>
@@ -163,7 +165,7 @@ const NewsCategory = ({ category }) => {
                             {posts.filter(article => article.category === category && article.type === "top").slice(0, 8).map((article, index) => (
                                 <Link to={`/news/${article.id}`} key={index} className="flex flex-col gap-4 mb-6 border-b pb-4">
                                     <div className="flex gap-4">
-                                        <img className="w-24 h-24 object-cover rounded" src={article.image} alt={article.headline} />
+                                        <img className="w-24 h-24 object-cover rounded" src={article.image} alt={article.headline} loading="lazy" />
                                         <div>
                                             <h3 className="text-lg font-semibold">{article.headline}</h3>
                                             <div className="text-sm text-gray-500">
@@ -177,10 +179,10 @@ const NewsCategory = ({ category }) => {
                         </div>
                         <div>
                             <h2 className="text-xl font-bold border-b-2 border-red-400 mb-4">INDIA NEWS</h2>
-                            {posts.filter(article => article.category === category && article.type === "india").slice(0, 8).map((article, index) => (
+                            {posts.filter(article => article.category === category && article.type === "india-news").slice(0, 8).map((article, index) => (
                                 <Link to={`/news/${article.id}`} key={index} className="flex flex-col gap-4 mb-6 border-b pb-4">
                                     <div className="flex gap-4">
-                                        <img className="w-24 h-24 object-cover rounded" src={article.image} alt={article.headline} />
+                                        <img className="w-24 h-24 object-cover rounded" loading="lazy" src={article.image} alt={article.headline} />
                                         <div>
                                             <h3 className="text-lg font-semibold">{article.headline}</h3>
                                             <div className="text-sm text-gray-500">
