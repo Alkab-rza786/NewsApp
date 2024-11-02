@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Loader from './Loader';
 import ShareButton from './ShareButton';
+import { FacebookShareButton, TwitterShareButton, WhatsappShareButton, FacebookIcon, TwitterIcon, WhatsappIcon } from 'react-share';
+
 
 const NewsComponent = () => {
     const [fourNews, setFourNews] = useState([]);
@@ -58,7 +60,7 @@ const NewsComponent = () => {
                 {/* Trending Now Bar */}
                 <div className="flex flex-wrap items-center mb-4 space-x-4">
                     <span className="bg-black text-white px-3 py-1 text-sm uppercase">Trending Now</span>
-                    <p className="text-gray-600 text-sm"> dfjk</p>
+                    <p className="text-gray-600 text-sm">{fourNews[0].headline} </p>
                 </div>
 
                 {/* Main Content Grid */}
@@ -73,14 +75,18 @@ const NewsComponent = () => {
                             />
                             <div className="absolute bottom-4 left-4 bg-opacity-60 p-4 rounded-md text-white">
                                 <span className="bg-blue-600 px-3 py-1 text-xs uppercase">{fourNews[0].category}</span>
-                                <Link to={`/news/${fourNews[0].id}`} onClick={window.scrollTo(0, 0)} ><h2 className="mt-2 text-lg sm:text-xl font-bold hover:underline">
+                                <Link to={`/news/${fourNews[0].id}`} onClick={window.scrollTo(0, 0)} ><h2 className="mt-2 text-sm sm:text-xl font-bold hover:underline">
                                     {fourNews[0].headline}
                                 </h2>
                                 </Link>
                                 <p className="mt-1 text-xs sm:text-sm">
-                                    {new Date(fourNews[0].createdAt).toLocaleDateString('en-CA')}
+                                    <b>Date :</b> {new Date(fourNews[0].createdAt).toLocaleDateString('en-CA', {
+                                        day: 'numeric',
+                                        month: 'short',
+                                        year: 'numeric',
+                                    })}
                                 </p>
-                                <ShareButton url={`http://localhost:4000/news/${fourNews[0].id}`} title={fourNews[0].headline} />
+                                <ShareButton url={`http://localhost:3000/news/${fourNews[0].id}`} title={fourNews[0].headline} image={fourNews[0].image} />
                             </div>
                         </div>
 
@@ -90,11 +96,11 @@ const NewsComponent = () => {
                                 <img
                                     src={fourNews[1].image}
                                     alt="Gadget"
-                                    className="w-full h-full object-cover max-h-[150px] sm:max-h-[200px]"
+                                    className="w-full h-full object-cover max-h-[270px] sm:max-h-[200px]"
                                 />
                                 <div className="absolute bottom-4 left-4 bg-opacity-60 p-4 rounded-md text-white">
                                     <span className="bg-green-600 px-3 py-1 text-xs uppercase">{fourNews[1].category}</span>
-                                    <h3 className="mt-2 text-sm sm:text-lg font-semibold"> {fourNews[1].headline}</h3>
+                                    <h3 className="mt-2 text-sm md:text-sm sm:text-lg font-semibold"> {fourNews[1].headline}</h3>
                                 </div>
                             </Link>
 
@@ -108,7 +114,7 @@ const NewsComponent = () => {
                                     />
                                     <div className="absolute bottom-4 left-4 bg-opacity-60 p-2 rounded-md text-white">
                                         <span className="bg-pink-600 px-2 py-1 text-xs uppercase">{fourNews[2].category}</span>
-                                        <h4 className="mt-1 text-xs sm:text-sm">{fourNews[2].headline}</h4>
+                                        <h4 className="mt-1 text-xs md:text-xs sm:text-sm">{fourNews[2].headline}</h4>
                                     </div>
                                 </Link>
 
@@ -121,7 +127,7 @@ const NewsComponent = () => {
                                     />
                                     <div className="absolute bottom-4 left-4 bg-opacity-60 p-2 rounded-md text-white">
                                         <span className="bg-yellow-600 px-2 py-1 text-xs uppercase">{fourNews[3].category}</span>
-                                        <h4 className="mt-1 text-xs sm:text-sm">{fourNews[3].headline}</h4>
+                                        <h4 className="mt-1 text-xs md:text-xs sm:text-sm">{fourNews[3].headline}</h4>
                                     </div>
                                 </Link>
                             </div>
@@ -155,15 +161,25 @@ const NewsComponent = () => {
 
                             <div className="p-3 ">
                                 <h3 className="font-semibold text-base text-gray-800">{article.headline}</h3>
-                                <p className="text-xs text-gray-500 mt-1">{article.category} • {new Date(article.createdAt).toLocaleDateString('en-CA')}</p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                    <b>Date :</b> {new Date(article.createdAt).toLocaleDateString('en-CA', {
+                                        day: 'numeric',
+                                        month: 'short',
+                                        year: 'numeric',
+                                    })}
+                                </p>
+
+                                <p className="text-xs text-gray-500 mt-1"><b>Edited By: </b> {article.editor}</p>
                                 <Link to={`/news/${article.id}`} onClick={window.scrollTo(0, 0)}  ><p className="text-sm text-gray-600 mt-2 hover:underline">
                                     {article?.summary ? (article.summary.length > 50 ? `${article.summary.substring(0, 250)}...` : article.summary) : "No summary available"}
                                 </p></Link>
-                                <div className='flex gap-3'>
+                                <div className='flex justify-between'>
                                     <Link to={`/news/${article.id}`} onClick={window.scrollTo(0, 0)}><button className="bg-orange-500 text-white px-3 py-1 mt-4 text-sm rounded hover:bg-orange-600">
                                         Read more
                                     </button></Link>
-                                    <ShareButton url={`http://localhost:4000/news/${article.id}`} title={article.headline} />
+                                    {/* <ShareButton url={`http://localhost:4000/news/${article.id}`} title={article.headline} /> */}
+
+                                    <ShareButton article={article} />
                                 </div>
                             </div>
                         </div>
@@ -188,7 +204,14 @@ const NewsComponent = () => {
                                         <div>
                                             <h3 className="text-lg font-semibold">{article.headline}</h3>
                                             <div className="text-sm text-gray-500">
-                                                <span>{article.category}</span> <span>{new Date(article.createdAt).toLocaleDateString('en-CA')}</span>
+                                            <div className='flex  justify-between'>
+                                                <span><b>Date :</b> {new Date(article.createdAt).toLocaleDateString('en-CA', {
+                                                    day: 'numeric',
+                                                    month: 'short',
+                                                    year: 'numeric',
+                                                })}</span> 
+                                                <span><b>Edited By</b>: Alkab Rza</span>
+                                                </div>
                                             </div>
                                             <p className="text-sm text-gray-600">{article.summary.substring(0, 100)}...</p>
                                         </div>
@@ -209,7 +232,15 @@ const NewsComponent = () => {
                                         <div>
                                             <h3 className="text-lg font-semibold">{article.headline}</h3>
                                             <div className="text-sm text-gray-500">
-                                                <span>{article.category}</span> <span>{new Date(article.createdAt).toLocaleDateString('en-CA')}</span>
+                                                <div className='flex  justify-between'>
+                                                <span><b>Date :</b> {new Date(article.createdAt).toLocaleDateString('en-CA', {
+                                                    day: 'numeric',
+                                                    month: 'short',
+                                                    year: 'numeric',
+                                                })}</span> 
+                                                <span><b>Edited By</b>: Alkab Rza</span>
+                                                </div>
+
                                             </div>
                                             <p className="text-sm text-gray-600">{article.summary.substring(0, 100)}...</p>
                                         </div>

@@ -85,6 +85,10 @@ const Product = mongoose.model("product", {
         type: String,
         required: true
     },
+    editor:{
+        type: String,
+        required: true
+    },
     type: {
         type: String,
         required: true
@@ -109,6 +113,7 @@ app.post('/addproduct',asyncHandler( async (req, res) => {
         id: id,
         headline: req.body.headline,
         image: req.body.image, // This will now store the Cloudinary URL
+        editor:req.body.editor,
         category: req.body.category,
         summary: req.body.summary,
         type: req.body.type
@@ -228,5 +233,7 @@ app.listen(port, (err) => {
         console.log("Error  " + err);
     }
 });
+
+
 
 

@@ -11,6 +11,7 @@ function AddProduct() {
         headline: "",
         image: "",
         summary: "",
+        editor:"",
         category: "national",
         type: "latest"
 
@@ -63,11 +64,16 @@ function AddProduct() {
                 <input value={productDetails.headline} onChange={changeHandler} type="text" name='headline' placeholder='Type here' />
             </div>
             <div className="addproduct-itemfield">
+                <p>Editor Name</p>
+                <input value={productDetails.editor} onChange={changeHandler} type="text" name='editor' placeholder='Type here' />
+            </div>
+            <div className="addproduct-itemfield">
                 <p>News Summary</p>
                 <textarea rows='10' value={productDetails.summary} onChange={changeHandler} type="text" name='summary' placeholder='Type here' />
             </div>
 
             <div className='category-divide' >
+
                 <div className="addproduct-itemfield">
                     <p>News Category</p>
                     <select value={productDetails.category} onChange={changeHandler} name="category" className='add-product-selector' >

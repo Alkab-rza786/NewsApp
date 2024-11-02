@@ -94,7 +94,7 @@ const NewsCategory = ({ category }) => {
             </div>
 
             {/* Popular Posts Section */}
-            <div className="container mx-auto mt-10 px-10 py-6">
+            {/* <div className="container mx-auto mt-10 px-10 py-6">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-xl font-bold">Most Popular</h2>
                     <div className="w-full h-[3px] bg-orange-500 rounded mt-1"></div>
@@ -124,6 +124,61 @@ const NewsCategory = ({ category }) => {
                         </div>
                     ))}
                 </div>
+            </div> */}
+            <div className="container mx-auto mt-10 px-10 py-6">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-bold">Most Popular</h2>
+                    <div className="w-full h-[3px] bg-orange-500 rounded mt-1"></div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+                    {posts
+                        .filter((post) => post.category === category && post.type === "normal")
+                        .slice(0, 7)
+                        .map((post, index) => (
+                            <div
+                                key={index}
+                                className="bg-white shadow-md rounded-lg overflow-hidden transform hover:scale-105 transition-transform duration-300"
+                            >
+                                <img
+                                    src={post.image}
+                                    alt="News"
+                                    className="w-full h-40 object-cover"
+                                    loading="lazy"
+                                />
+                                <div className="p-3">
+                                    <h3 className="font-semibold text-base text-gray-800">{post.headline}</h3>
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        <b>Date :</b> {new Date(post.createdAt).toLocaleDateString('en-CA', {
+                                            day: 'numeric',
+                                            month: 'short',
+                                            year: 'numeric',
+                                        })}
+                                    </p>
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        <b>Edited By :</b>
+                                    </p>
+                                    <Link to={`/news/${post.id}`} onClick={() => window.scrollTo(0, 0)}>
+                                        <p className="text-sm text-gray-600 mt-2 hover:underline">
+                                            {post?.summary
+                                                ? post.summary.length > 50
+                                                    ? `${post.summary.substring(0, 250)}...`
+                                                    : post.summary
+                                                : "No summary available"}
+                                        </p>
+                                    </Link>
+                                    <div className="flex justify-between">
+                                        <Link to={`/news/${post.id}`} onClick={() => window.scrollTo(0, 0)}>
+                                            <button className="bg-orange-500 text-white px-3 py-1 mt-4 text-sm rounded hover:bg-orange-600">
+                                                Read more
+                                            </button>
+                                        </Link>
+                                        <ShareButton url={`http://localhost:4000/news/${post.id}`} title={post.headline} image={post.image} />
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                </div>
             </div>
 
             {/* Additional Articles */}
@@ -131,12 +186,17 @@ const NewsCategory = ({ category }) => {
                 {posts.filter(post => post.category === category && post.type === "normal").slice(7, 10).map((news, index) => (
                     <Link key={index} className="flex flex-col md:flex-row bg-white shadow-md rounded-lg overflow-hidden mb-4">
                         <div className="md:w-1/3">
-                            <img src={news.image} alt={news.headline} className="w-full h-48 md:h-full object-cover" loading="lazy"/>
+                            <img src={news.image} alt={news.headline} className="w-full h-48 md:h-full object-cover" loading="lazy" />
                         </div>
                         <div className="p-4 md:w-2/3 flex flex-col justify-between">
                             <div>
                                 <h2 className="text-lg font-semibold text-gray-800">{news.headline}</h2>
-                                <p className="text-sm text-gray-600">By <span className="font-bold"></span> — {new Date(news.createdAt).toLocaleDateString('en-CA')}</p>
+                                <p className="text-sm text-gray-600"> <span className="font-bold"></span> <b>Date :</b> {new Date(news.createdAt).toLocaleDateString('en-CA', {
+                                    day: 'numeric',
+                                    month: 'short',
+                                    year: 'numeric',
+                                })}</p>
+                                <p className="text-sm text-gray-600"> <b>Edited By</b> : Alkab Rza</p>
                                 <Link to={`/news/${news.id}`}><p className="text-sm text-gray-500 hover:underline">{news.summary}</p>
 
                                     <button className="mt-2 text-blue-600 hover:text-blue-800 text-sm font-semibold">Read More</button></Link>
@@ -148,7 +208,7 @@ const NewsCategory = ({ category }) => {
                                     </div>
                                 )}
                                 <div className="flex items-center text-gray-500 text-sm space-x-2">
-                                    <ShareButton url={`http://localhost:4000/news/${news.id}`} title={news.headline} />
+                                    <ShareButton url={`http://localhost:4000/news/${news.id}`} title={news.headline} image={news.image} />
                                 </div>
                             </div>
                         </div>
@@ -169,7 +229,11 @@ const NewsCategory = ({ category }) => {
                                         <div>
                                             <h3 className="text-lg font-semibold">{article.headline}</h3>
                                             <div className="text-sm text-gray-500">
-                                                <span>{article.category}</span> | <span>{new Date(article.createdAt).toLocaleDateString('en-CA')}</span>
+                                                <span><b>Date :</b> {new Date(article.createdAt).toLocaleDateString('en-CA', {
+                                                    day: 'numeric',
+                                                    month: 'short',
+                                                    year: 'numeric',
+                                                })}</span><br /> <b>Edited By : Alkab Rza</b>
                                             </div>
                                         </div>
                                     </div>
@@ -186,7 +250,11 @@ const NewsCategory = ({ category }) => {
                                         <div>
                                             <h3 className="text-lg font-semibold">{article.headline}</h3>
                                             <div className="text-sm text-gray-500">
-                                                <span>{article.category}</span> | <span>{new Date(article.createdAt).toLocaleDateString('en-CA')}</span>
+                                                <span><b>Date :</b> {new Date(article.createdAt).toLocaleDateString('en-CA', {
+                                                    day: 'numeric',
+                                                    month: 'short',
+                                                    year: 'numeric',
+                                                })}</span><br /> <b>Edited By : Alkab Rza</b>
                                             </div>
                                         </div>
                                     </div>
