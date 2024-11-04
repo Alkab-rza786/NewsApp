@@ -4,13 +4,20 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const cors = require('cors');
 const cloudinary = require('cloudinary').v2;
-const fs = require('fs')
+const fs = require('fs');
+const { type } = require('os');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const asyncHandler = require('express-async-handler');
 // Load environment variables from .env file
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+const JWT_SECRET = "Alkab_news";
+
 
 // Cloudinary configuration
 cloudinary.config({
@@ -29,11 +36,7 @@ mongoose.connect("mongodb://localhost:27017/NewsApp").then(() => {
     console.log("database is connected")
 })
 
-function asyncHandler(fn) {
-    return function (req, res, next) {
-        Promise.resolve(fn(req, res, next)).catch(next);
-    };
-}
+
 
 
 // API creation
@@ -85,7 +88,7 @@ const Product = mongoose.model("product", {
         type: String,
         required: true
     },
-    editor:{
+    editor: {
         type: String,
         required: true
     },
@@ -97,7 +100,7 @@ const Product = mongoose.model("product", {
 
 });
 
-app.post('/addproduct',asyncHandler( async (req, res) => {
+app.post('/addproduct', asyncHandler(async (req, res) => {
     let products = await Product.find({});
     let id;
 
@@ -113,7 +116,7 @@ app.post('/addproduct',asyncHandler( async (req, res) => {
         id: id,
         headline: req.body.headline,
         image: req.body.image, // This will now store the Cloudinary URL
-        editor:req.body.editor,
+        editor: req.body.editor,
         category: req.body.category,
         summary: req.body.summary,
         type: req.body.type
@@ -149,6 +152,7 @@ app.get('/allnews', asyncHandler(async (req, res) => {
         .limit(9);
     res.send(products);
 }));
+
 app.get('/allnewsofcategory', asyncHandler(async (req, res) => {
     let products = await Product.find({})
         .sort({ createdAt: -1 });
@@ -180,6 +184,7 @@ app.get('/category-two-news/:category', asyncHandler(async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }));
+
 app.get('/newsCard/:category', asyncHandler(async (req, res) => {
     try {
         const { category } = req.params;
@@ -205,6 +210,7 @@ app.get('/latest', asyncHandler(async (req, res) => {
         res.status(500).json({ message: 'Error fetching latest news', error });
     }
 }));
+
 app.get('/top', asyncHandler(async (req, res) => {
     try {
         // Find news with type "latest", sorted by creation date in descending order, limited to 5
@@ -217,6 +223,200 @@ app.get('/top', asyncHandler(async (req, res) => {
         res.status(500).json({ message: 'Error fetching latest news', error });
     }
 }));
+
+
+
+//    FROM HERE THE API'S ARE THE EDITOR 
+
+// login
+const userSchema = new mongoose.Schema({
+    username: { type: String, required: true },
+    email: { type: String, required: true, unique: true }, // Add unique constraint
+    password: { type: String, required: true }
+});
+
+const User = mongoose.model('User', userSchema);
+
+// Schema for creating product
+// const editorProduct = mongoose.model("editorproduct", {
+//     id: {
+//         type: Number,
+//         required: true
+//     },
+//     headline: {
+//         type: String,
+//         required: true
+//     },
+//     image: {
+//         type: String,
+//         required: true
+//     },
+//     category: {
+//         type: String,
+//         required: true
+//     },
+//     summary: {
+//         type: String,
+//         required: true
+//     },
+//     editor: {
+//         type: String,
+//         required: true
+//     },
+//     type: {
+//         type: String,
+//         required: true
+//     },
+//     status: {
+//         type: Boolean,
+//         required: true,
+//     },
+//     createdAt: { type: Date, default: Date.now }
+
+// });
+
+const editorProductSchema = new mongoose.Schema({
+    id: { type: Number, required: true },
+    headline: { type: String, required: true },
+    image: { type: String, required: true },
+    category: { type: String, required: true },
+    summary: { type: String, required: true },
+    editor: { type: String, required: true },
+    type: { type: String, required: true },
+    status: { type: Boolean, required: true },
+    createdAt: { type: Date, default: Date.now },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // reference to the user who posted it
+});
+
+const editorProduct = mongoose.model('EditorProduct', editorProductSchema);
+
+// Helper functions
+const generateToken = (id) => {
+    return jwt.sign({ id }, JWT_SECRET, { expiresIn: '30d' });
+};
+
+// Middlewares
+const protect = asyncHandler(async (req, res, next) => {
+    let token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+
+    if (!token) {
+        res.status(401);
+        throw new Error('Not authorized, no token');
+    }
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        req.user = await User.findById(decoded.id).select('-password');
+        next();
+    } catch (error) {
+        res.status(401);
+        throw new Error('Not authorized, token failed');
+    }
+});
+app.post('/signup', asyncHandler(async (req, res) => {
+    const { username, email, password } = req.body;
+
+    // Check if a user already exists with the given email
+    const userExistsByEmail = await User.findOne({ email });
+    if (userExistsByEmail) {
+        return res.status(400).json({
+            msg: "User already exists with this email.",
+            success: false
+        });
+    }
+
+    // Allow duplicate usernames, no check needed
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create the user
+    const user = await User.create({ username, email, password: hashedPassword });
+
+    // Respond with user details
+    res.status(201).json({
+        _id: user._id,
+        username: user.username,
+        token: generateToken(user._id),
+        success: true
+    });
+}));
+
+
+
+
+app.post('/login', asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+    if (user && (await bcrypt.compare(password, user.password))) {
+        res.json({
+            _id: user._id,
+            username: user.username,
+            token: generateToken(user._id),
+            success: true
+        });
+    } else {
+        res.status(401);
+        // throw new Error('Invalid username or password');
+        res.json({
+            msg: "invalid credentials"
+        })
+    }
+}));
+
+//Schema for editor add product
+app.post('/editorAddproduct', protect, asyncHandler(async (req, res) => {
+    const editorproducts = await editorProduct.find({});
+    let id = editorproducts.length ? editorproducts.slice(-1)[0].id + 1 : 1;
+
+    const newProduct = new editorProduct({
+        id,
+        headline: req.body.headline,
+        image: req.body.image, // This should be the Cloudinary URL
+        editor: req.user.username,
+        category: req.body.category,
+        summary: req.body.summary,
+        type: req.body.type,
+        status: req.body.status,
+        userId: req.user._id,
+    });
+
+    await newProduct.save();
+    res.json({ success: true, headline: req.body.headline });
+}));
+
+app.get('/myProducts', protect, asyncHandler(async (req, res) => {
+    const products = await editorProduct.find({ userId: req.user._id });
+    res.json(products);
+}));
+
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ message: 'Internal Server Error', error: err.message });
+})
+
+// app.post('/editorRemoveproduct', asyncHandler(async (req, res) => {
+//     await editorProduct.findOneAndDelete({ id: req.body.id });
+//     res.json({
+//         success: true,
+//         name: req.body.name
+//     });
+// }));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
