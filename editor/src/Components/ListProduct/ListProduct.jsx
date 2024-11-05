@@ -74,6 +74,7 @@ function ListProduct() {
                 <p>Category</p>
                 <p>Type</p>
                 <p>status</p>
+
                 <p>Remove</p>
 
             </div>
@@ -86,7 +87,7 @@ function ListProduct() {
                             <p>{product.headline}</p>
                             <p>{product.category}</p>
                             <p>{product.type}</p>
-                            <p>{product.status === true ? "Accepted" : "Pending"}</p>
+                            <p>{(product.status).charAt(0).toUpperCase()+(product.status).slice(1)}</p>
 
                             <img onClick={() => remove_product(product.id)} src={cross_icon} className='listproduct-remove-icon' alt="" />
                         </div>

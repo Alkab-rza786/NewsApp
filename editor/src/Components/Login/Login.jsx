@@ -20,9 +20,13 @@ const Login = () => {
         const data = await response.json();
 
         if (data.success) {
+            // Store the token and username in localStorage
             localStorage.setItem('token', data.token);
+            localStorage.setItem('username', data.username); // Save the username
+
             toast.success('Logged in successfully');
-            navigate('/editor'); // Redirect to the dashboard or home page
+            navigate('/editor'); // Redirect to the editor or another page
+            window.location.reload(); // Refresh the page to show login state in Navbar
         } else {
             toast.error(data.msg || 'Login failed');
         }

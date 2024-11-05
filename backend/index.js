@@ -283,7 +283,11 @@ const editorProductSchema = new mongoose.Schema({
     summary: { type: String, required: true },
     editor: { type: String, required: true },
     type: { type: String, required: true },
-    status: { type: Boolean, required: true },
+    status: {
+        type: String,
+        enum: ['pending', 'accepted', 'rejected'], // Use strings to represent the status
+        default: 'pending', // Default status
+    },
     createdAt: { type: Date, default: Date.now },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // reference to the user who posted it
 });
@@ -391,10 +395,101 @@ app.get('/myProducts', protect, asyncHandler(async (req, res) => {
     res.json(products);
 }));
 
+app.get('/editorAllposts', async (req, res) => {
+    try {
+        const posts = await editorProduct.find().populate('userId', 'username');
+
+        res.status(200).json(posts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error while fetching posts' });
+    }
+});
+
+
+
+app.put('/updatePostStatus/:id', async (req, res) => {
+    const postId = req.params.id;
+    const { status } = req.body; // Expecting status to be true (accepted), false (pending), or 'rejected'
+
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+        return res.status(400).json({ message: 'Invalid Post ID' });
+    }
+
+    try {
+        const updatedPost = await editorProduct.findByIdAndUpdate(
+            postId,
+            { status: status }, // Update the status field
+            { new: true } // Return the updated document
+        );
+
+        if (!updatedPost) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        res.json({ message: 'Post status updated successfully', post: updatedPost, success: true });
+    } catch (error) {
+        console.error("Error updating post status:", error); // Log the error for debugging
+        res.status(500).json({ message: 'Error updating post status', error });
+    }
+});
+
+app.post('/editorRemoveproduct', asyncHandler(async (req, res) => {
+    await editorProduct.findOneAndDelete({ id: req.body.id });
+    res.json({
+        success: true,
+        name: req.body.name
+    });
+}));
+
+
+
+app.put('/acceptPostAndMove/:id', asyncHandler(async (req, res) => {
+    const postId = req.params.id;
+
+    try {
+        // Find the post in the editor's collection
+        const editorPost = await editorProduct.findById(postId);
+
+        if (!editorPost) {
+            return res.status(404).json({ message: 'Post not found in editor\'s collection' });
+        }
+
+        // Update the status of the post to 'accepted'
+        editorPost.status = 'accepted';
+        await editorPost.save();
+
+        // Create a new entry in the main Product (admin) collection with the post data
+        const newProduct = new Product({
+            id: editorPost.id,
+            headline: editorPost.headline,
+            image: editorPost.image,
+            editor: editorPost.editor,
+            category: editorPost.category,
+            summary: editorPost.summary,
+            type: editorPost.type,
+           
+            userId: editorPost.userId
+        });
+
+        // Save the post to the main Product (admin) collection
+        await newProduct.save();
+
+        res.json({ success: true, message: 'Post accepted, status updated, and moved to main database' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error processing post', error });
+    }
+}));
+
+
+
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ message: 'Internal Server Error', error: err.message });
 })
+
+
 
 // app.post('/editorRemoveproduct', asyncHandler(async (req, res) => {
 //     await editorProduct.findOneAndDelete({ id: req.body.id });

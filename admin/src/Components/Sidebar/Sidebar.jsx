@@ -21,6 +21,13 @@ function Sidebar() {
                     <p>News List</p>
                 </div>
             </Link>
+            <Link to={'/reqListproduct'} style={{ textDecoration: "none" }} >
+                <div className="sidebar-item p-5">
+                    <img src={list_product_icon} alt="" />
+                    {/* <p>Product List</p> */}
+                    <p>Request News </p>
+                </div>
+            </Link>
         </div>
     )
 }

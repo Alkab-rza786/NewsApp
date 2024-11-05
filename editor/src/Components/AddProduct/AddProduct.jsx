@@ -12,7 +12,7 @@ function AddProduct() {
         editor: "",
         category: "national",
         type: "latest",
-        status: false,
+        status: 'pending',
     });
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -36,7 +36,7 @@ function AddProduct() {
    const addProduct = async () => {
     console.log(productDetails);
     let responseData;
-    let product = { ...productDetails, status: false }; // Ensure status is set to false
+    let product = { ...productDetails, status: 'pending' }; // Ensure status is set to false
     let formData = new FormData();
 
     formData.append('product', image);
