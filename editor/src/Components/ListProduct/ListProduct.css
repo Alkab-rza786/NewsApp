@@ -39,14 +39,15 @@
     overflow-y: auto;
 }
 
-@media (max-width:800px) {
+
+
+@media (max-width: 800px) {
     .list-product {
         box-sizing: border-box;
         width: 95%;
         height: 100%;
         padding: 10px 30px;
         margin: 20px auto;
-
     }
 
     .listproduct-format-main {
@@ -56,6 +57,19 @@
     }
 
     .listproduct-product-icon {
-        height: 60px;
+        /* height: 50px;
+        width: 100px; */
+        object-fit: contain;
+
+    }
+
+    /* Adjust title length and gap */
+    .listproduct-title {
+        font-size: 14px; /* Decrease the font size for small devices */
+        margin-bottom: 10px; /* Add gap between title and other elements */
+        overflow: hidden; /* Hide overflow if title is too long */
+        text-overflow: ellipsis; /* Add ellipsis for long titles */
+        white-space: nowrap; /* Prevent wrapping */
+        font-size: 12px;
     }
 }

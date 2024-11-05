@@ -456,6 +456,13 @@ app.put('/acceptPostAndMove/:id', asyncHandler(async (req, res) => {
             return res.status(404).json({ message: 'Post not found in editor\'s collection' });
         }
 
+        if(editorPost.status==='accepted'){
+           return  res.json({
+                 success:true,
+                message:'Post already Accepted'
+            })
+        }
+
         // Update the status of the post to 'accepted'
         editorPost.status = 'accepted';
         await editorPost.save();

@@ -69,13 +69,13 @@ function ListProduct() {
             <h1 className='mt-5 mb-5'>All News  List</h1>
 
             <div className="listproduct-format-main">
-                <p>Products</p>
-                <p>Title</p>
-                <p>Category</p>
-                <p>Type</p>
-                <p>status</p>
+                <p>|Products|</p>
+                <p>|Title|</p>
+                <p>|Category|</p>
+                <p>|Type|</p>
+                <p>|status|</p>
 
-                <p>Remove</p>
+                <p>|Remove|</p>
 
             </div>
             <div className="listproduct-allproducts">
@@ -84,12 +84,12 @@ function ListProduct() {
                     allproducts.map((product, i) => {
                         return <><div className="listproduct-format-main listproduct-format">
                             <img src={product.image} alt="" className="listproduct-product-icon" />
-                            <p>{product.headline}</p>
+                            <p className='listproduct-title'>{product.headline}</p>
                             <p>{product.category}</p>
                             <p>{product.type}</p>
                             <p>{(product.status).charAt(0).toUpperCase()+(product.status).slice(1)}</p>
 
-                            <img onClick={() => remove_product(product.id)} src={cross_icon} className='listproduct-remove-icon' alt="" />
+                            <img onClick={() => remove_product(product.id)} src={cross_icon} className='listproduct-remove-icon ' alt="" />
                         </div>
                             <hr /></>
                     })

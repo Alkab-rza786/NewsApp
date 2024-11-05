@@ -101,9 +101,11 @@ function ListReqProduct() {
                         return (
                             <div key={i} className="listproduct-format-main listproduct-format">
                                 <img src={product.image} alt="" className="listproduct-product-icon" />
-                                <p>{product.headline}</p>
+                                <p className='listproduct-title' >{product.headline}</p>
 
-                                <p className='text-red-300'>{product.status}</p>
+                               {
+                                  <p className='text-green-600 '>{(product.status).charAt(0).toUpperCase()+(product.status).slice(1)}</p>
+                               }
                                 <p>{product.userId?.username || 'Unknown User'}</p>
                                 <div>
                                     <button onClick={() => acceptAndMovePost(product._id,'accepted')} className="status-button accepted">Accept</button>
