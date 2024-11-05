@@ -160,7 +160,7 @@ app.get('/allnewsofcategory', asyncHandler(async (req, res) => {
 }));
 
 // Route to fetch the latest 4 news articles
-app.get('/home-four-news', asyncHandler(async (req, res) => {
+app.get('/homeFourNews', asyncHandler(async (req, res) => {
     try {
         const fournews = await Product.find({ type: "home-trending" })
             .sort({ createdAt: -1 }) // Sort by createdAt in descending order
@@ -371,7 +371,7 @@ app.post('/login', asyncHandler(async (req, res) => {
 
 //Schema for editor add product
 app.post('/editorAddproduct', protect, asyncHandler(async (req, res) => {
-    const editorproducts = await editorProduct.find({});
+    const editorproducts = await Product.find({});
     let id = editorproducts.length ? editorproducts.slice(-1)[0].id + 1 : 1;
 
     const newProduct = new editorProduct({

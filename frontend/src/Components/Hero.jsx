@@ -6,7 +6,7 @@ import { FacebookShareButton, TwitterShareButton, WhatsappShareButton, FacebookI
 
 
 const NewsComponent = () => {
-    const [fourNews, setFourNews] = useState([]);
+    const [fourNews, setFourNews] = useState();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [articles, setArticles] = useState([]);
@@ -18,7 +18,7 @@ const NewsComponent = () => {
             try {
                 setLoading(true);
                 const [fourNewsResponse, allNewsResponse, latestResponse, topResponse] = await Promise.all([
-                    fetch('http://localhost:4000/home-four-news'),
+                    fetch('http://localhost:4000/homeFourNews'),
                     fetch('http://localhost:4000/allnews'),
                     fetch('http://localhost:4000/latest'),
                     fetch('http://localhost:4000/top')
@@ -34,8 +34,9 @@ const NewsComponent = () => {
                     latestResponse.json(),
                     topResponse.json()
                 ]);
-
+                console.log(fourNewsData)
                 setFourNews(fourNewsData);
+                console.log(fourNews);
                 setArticles(allNewsData);
                 setLatest(latestData);
                 setTop(topData);
@@ -60,11 +61,11 @@ const NewsComponent = () => {
                 {/* Trending Now Bar */}
                 <div className="flex flex-wrap items-center mb-4 space-x-4">
                     <span className="bg-black text-white px-3 py-1 text-sm uppercase">Trending Now</span>
-                    <p className="text-gray-600 text-sm">{fourNews[0].headline} </p>
+                    <p className="text-gray-600 text-sm">{} </p>
                 </div>
 
                 {/* Main Content Grid */}
-                {fourNews.length > 0 ? (
+                {fourNews.length > 3 ? (
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                         {/* Left Large Image */}
                         <div className="relative md:col-span-2">

@@ -31,6 +31,8 @@ function ListReqProduct() {
             body: JSON.stringify({ id: id })
         });
         toast.success("Product Removed");
+        window.location.reload();
+
         await fetchInfo();
     };
 

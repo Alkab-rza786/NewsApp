@@ -28,6 +28,8 @@ const NewsCard = () => {
 
     // Find the specific news by ID
     const news = newses.find((e) => e.id === Number(newsId));
+    console.log(news);
+    // console.log(object)
 
     return (
         <div className="flex flex-col lg:flex-row max-w-screen-lg mx-auto p-4 gap-6">
